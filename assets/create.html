@@ -1,0 +1,24 @@
+{% extends "admin/challenges/create.html" %}
+
+{% block header %}
+<div class="alert alert-secondary" role="alert">
+  The challenge value decreases for future solves only. Points already awarded never change.
+</div>
+{% endblock %}
+
+{% block value %}
+<div class="form-group">
+  <label>Initial Value</label>
+  <input type="number" class="form-control" name="initial" required>
+</div>
+<div class="form-group">
+  <label>Decay</label>
+  <input type="number" class="form-control" name="decay" min="1" required>
+</div>
+<div class="form-group">
+  <label>Minimum Value</label>
+  <input type="number" class="form-control" name="minimum" required>
+</div>
+{% endblock %}
+
+{% block type %}<input type="hidden" name="type" value="fixed_dynamic">{% endblock %}
