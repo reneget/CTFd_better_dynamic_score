@@ -2,7 +2,7 @@
 
 import sqlalchemy as sa
 
-revision = "001"
+revision = "fd000001"
 down_revision = None
 branch_labels = None
 depends_on = None

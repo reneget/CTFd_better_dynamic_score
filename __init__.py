@@ -12,7 +12,7 @@ from sqlalchemy import event, select, union_all
 
 from CTFd.cache import clear_challenges, clear_standings
 from CTFd.exceptions.challenges import ChallengeCreateException
-from CTFd.models import Awards, Brackets, Challenges, Solves, Teams, Users, db
+from CTFd.models import Awards, Brackets, Challenges, Configs, Solves, Teams, Users, db
 from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.challenges.decay import DECAY_FUNCTIONS
@@ -78,8 +78,8 @@ class FixedDynamicChallengeType(BaseChallenge):
     id = "fixed_dynamic"
     name = "Fixed Dynamic"
     templates = {
-        "create": "/plugins/fixed_dynamic_scoring/assets/create.html",
-        "update": "/plugins/fixed_dynamic_scoring/assets/update.html",
+        "create": "/plugins/CTFd_better_dynamic_score/templates/create.html",
+        "update": "/plugins/CTFd_better_dynamic_score/templates/update.html",
         "view": "/plugins/challenges/assets/view.html",
     }
     scripts = {
@@ -87,7 +87,7 @@ class FixedDynamicChallengeType(BaseChallenge):
         "update": "/plugins/challenges/assets/update.js",
         "view": "/plugins/challenges/assets/view.js",
     }
-    route = "/plugins/fixed_dynamic_scoring/assets/"
+    route = "/plugins/CTFd_better_dynamic_score/assets/"
     blueprint = Blueprint(
         "fixed_dynamic", __name__, template_folder="templates", static_folder="assets"
     )
@@ -296,7 +296,13 @@ def _user_score(self, admin=False):
 
 def load(app):
     # Import the model before SQLite's create_all shortcut in plugin migrations.
-    upgrade(plugin_name="fixed_dynamic_scoring")
+    legacy_version = Configs.query.filter_by(
+        key="fixed_dynamic_scoring_alembic_version"
+    ).first()
+    if legacy_version and str(legacy_version.value) == "1":
+        legacy_version.value = None
+        db.session.commit()
+    upgrade(plugin_name="CTFd_better_dynamic_score")
     DECAY_FUNCTIONS["fixed_dynamic"] = fixed_dynamic
     CHALLENGE_CLASSES["fixed_dynamic"] = FixedDynamicChallengeType
     if not getattr(Solves, "_fixed_dynamic_listeners_registered", False):
@@ -335,4 +341,4 @@ def load(app):
     statistics_progression.get_standings = get_standings
     clear_standings()
     clear_challenges()
-    register_plugin_assets_directory(app, base_path="/plugins/fixed_dynamic_scoring/assets/")
+    register_plugin_assets_directory(app, base_path="/plugins/CTFd_better_dynamic_score/assets/")
