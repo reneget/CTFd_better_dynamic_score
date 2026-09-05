@@ -1,4 +1,4 @@
-# Fixed Dynamic Scoring
+# CTFd better dynamic scoring
 
 This CTFd plugin adds the `Fixed Dynamic` challenge type.
 
@@ -9,7 +9,7 @@ solvers.
 
 ## Installation
 
-Copy this directory to `CTFd/CTFd/plugins/fixed_dynamic_scoring` and restart
+Clone this repo into `CTFd/plugins/CTFd_better_dynamic_scoring` and restart
 CTFd. Select `Fixed Dynamic` as the challenge type when creating a challenge.
 
 Install it before the competition starts. Solves created before installation
