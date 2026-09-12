@@ -284,9 +284,13 @@ def get_scoreboard_detail(count, bracket_id=None):
 
 def _user_score(self, admin=False):
     value = _solve_value()
-    query = db.session.query(db.func.sum(value)).join(Challenges).outerjoin(
-        AwardedValue, AwardedValue.solve_id == Solves.id
-    ).filter(Solves.user_id == self.id)
+    query = (
+        db.session.query(db.func.sum(value))
+        .select_from(Solves)
+        .join(Challenges, Solves.challenge_id == Challenges.id)
+        .outerjoin(AwardedValue, AwardedValue.solve_id == Solves.id)
+        .filter(Solves.user_id == self.id)
+    )
     query = _freeze_filter(query, Solves.date, admin)
     solve_score = query.scalar() or 0
     award = db.session.query(db.func.sum(Awards.value)).filter_by(user_id=self.id)
